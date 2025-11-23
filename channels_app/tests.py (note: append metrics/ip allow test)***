@@ -1,0 +1,7 @@
+    @patch("channels_app.views.is_ip_allowed", return_value=False)
+    def test_webhook_ip_blocked(self, _ip):
+        payload = {
+            "entry": [{"changes": [{"value": {"contacts": [{"wa_id": "123"}], "messages": [{"id": "mid-2", "from": "123", "type": "text", "text": {"body": "hi"}}]}}]}]
+        }
+        resp = self.client.post(self.url, data=json.dumps(payload), content_type="application/json")
+        self.assertEqual(resp.status_code, 403)
