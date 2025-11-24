@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions
+from rest_framework.response import Response
 
 from agents.models import AgentProfile
 from agents.models_prompt import AgentPromptVersion
@@ -23,7 +24,11 @@ class AgentPromptVersionListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         agent_id = self.kwargs.get("agent_id")
-        latest = AgentPromptVersion.objects.filter(agent_id=agent_id).order_by("-version").first()
+        latest = (
+            AgentPromptVersion.objects.filter(agent_id=agent_id)
+            .order_by("-version")
+            .first()
+        )
         next_version = (latest.version + 1) if latest else 1
         instance = serializer.save(agent_id=agent_id, version=next_version)
         AuditLog.objects.create(
